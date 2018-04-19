@@ -1,0 +1,21 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int main()
+{
+    int a[8]={6,2,5,1,7,4,8,3};
+    int dp[8];
+    dp[0]=1;
+    for(int i=0;i<8;i++){
+        dp[i]=1;
+        for(int k=0;k<i;k++){
+            if(a[k]>=a[i]) continue;
+            dp[i]=max(dp[i],dp[k]+1);
+        }
+    }
+    for(int i=0;i<8;i++){
+        cout<<i<<" "<<dp[i]<<"\n";
+    }
+    return 0;
+}
