@@ -1,0 +1,81 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define MAXSZ 100000
+
+int height[MAXSZ];
+int par[MAXSZ];
+
+void uinit(){
+    for(int i=0;i<MAXSZ;i++){
+        height[i]=1;
+        par[i]=i;
+    }
+}
+
+int ufind(int key){
+    if(par[key]==key){
+        return key;
+    }
+    return ufind(par[key]);
+}
+
+bool connected(int a, int b){
+    return (ufind(a)==ufind(b));
+}
+
+void umerge(int a, int b){
+    int roota=ufind(a);
+    int rootb=ufind(b);
+    if(roota==rootb) return;
+    if(height[roota]>height[rootb]){
+        par[rootb]=roota;
+        height[roota]+=height[rootb];
+    }
+    else{
+        par[roota]=rootb;
+        height[rootb]+=height[roota];
+    }
+}
+
+void printdsu(){
+    for(int i=1;i<=4;i++){
+        cout<<height[i]<<" "<<par[i]<<"\n";
+    }
+}
+
+map<string,int>hsh;
+
+int main()
+{
+
+    //ifstream cin("input.txt");
+    //ofstream cout("output.txt");
+    int tc; cin>>tc;
+    for(int i=0;i<tc;i++){
+        int n; cin>>n;
+        hsh.clear();
+        uinit();
+        int temp=1;
+        for(int i=0;i<n;i++){
+            string s1,s2; cin>>s1>>s2;
+            if(hsh[s1]==0) hsh[s1]=temp++;
+            if(hsh[s2]==0) hsh[s2]=temp++;
+            if(connected(hsh[s1],hsh[s2])){
+                int ans= height[ufind(hsh[s1])];
+                ans=max(ans, height[ufind(hsh[s2])]);
+                cout<<ans<<"\n";
+            }
+            else{
+                cout<<height[ufind(hsh[s1])]+height[ufind(hsh[s2])]<<"\n";
+            }
+            umerge(hsh[s1], hsh[s2]);
+        }
+
+    }
+    //printdsu();
+
+    return 0;
+}
+© 2018 GitHub, Inc.
