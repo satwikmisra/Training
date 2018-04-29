@@ -1,0 +1,24 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int main()
+{
+    int n; cin>>n;
+    vector<int>v;
+    for(int i=0;i<n;i++){ int t; cin>>t; v.push_back(t);};
+    int dp[n][n];
+    memset(dp,0,sizeof(dp));
+    for(int g=0;g<n;g++){
+        for(int i=0;i<n;i++){
+            int j=i+g;
+            if(i==j) dp[i][j]=v[i];
+            if(abs(j-i)==2) dp[i][j]=max(v[i],v[j]);
+            else{
+                dp[i][j]=max(v[i]+min(dp[i+2][j],dp[i+1][j-1]),v[j]+min(dp[i+1][j-1],dp[i][j-2]));
+            }
+        }
+    }
+    cout<<dp[0][n-1];
+    return 0;
+}
