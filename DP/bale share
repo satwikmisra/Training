@@ -1,0 +1,41 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+bool dp[20][2001][2001];
+
+int main()
+{
+    int n; cin>>n;
+    vector<int>bar;
+    int sum=0;
+    for(int i=0;i<n;i++){
+        int t; cin>>t; bar.push_back(t); sum+=t;
+    }
+    dp[0][bar[0]][0]=dp[0][0][bar[0]]=true;
+    for(int i=1;i<n;i++){
+        for(int j=0;j<2001;j++){
+            for(int k=0;k<2001;k++){
+                if(dp[i-1][j][k]){
+                    dp[i][j+bar[i]][k]=dp[i][j][k+bar[i]]=dp[i][j][k]=true;
+                }
+            }
+        }
+    }
+    int temp=INT_MAX;
+    int ans=0;
+    for(int i=0;i<2001;i++){
+        for(int j=0;j<2001;j++){
+            if(dp[n-1][i][j]){
+                int k=sum-i-j;
+                int temp2=abs(i-j)+abs(i-k)+abs(k-j);
+                if(temp2<temp){
+                    temp=temp2;
+                    ans=max(i,max(j,k));
+                }
+            }
+        }
+    }
+    cout<<ans;
+    return 0;
+}
