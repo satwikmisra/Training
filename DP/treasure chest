@@ -1,0 +1,32 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int dp[5000][5000];
+
+int main()
+{
+    int n; cin>>n;
+    vector<int>v;
+    int sum=0;
+    for(int i=0;i<n;i++){ int t; cin>>t; v.push_back(t); sum+=t;}
+    for(int g=0;g<n;g++){
+        for(int i=0;i<n;i++){
+            int j=i+g;
+            if(j>=n) continue;
+            if(i==j){
+                    dp[i][j]=v[i];
+            }
+            else if(abs(i-j)<2){
+                    dp[i][j]=max(v[i],v[j]);
+            }
+            else{
+                dp[i][j]=max(v[i]+min(dp[i+2][j],dp[i+1][j-1]) ,v[j]+min(dp[i][j-2],dp[i+1][j-1]));
+            }
+
+        }
+    }
+    cout<<max(dp[0][n-1],sum-dp[0][n-1]);
+
+    return 0;
+}
