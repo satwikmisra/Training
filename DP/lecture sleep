@@ -1,0 +1,34 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int main()
+{
+    int n, k; cin>>n>>k;
+    vector<int>v;
+    vector<int>a;
+    vector<int>pref1;
+    vector<int>pref2;
+    pref1.resize(n);
+    pref2.resize(n);
+    for(int i=0;i<n;i++){
+        int t; cin>>t; v.push_back(t);
+    }
+    for(int i=0;i<n;i++){
+        int t; cin>>t; a.push_back(t);
+    }
+    if(a[0]==1) pref1[0]=v[0]; else pref2[0]=v[0];
+    for(int i=1;i<n;i++){
+        pref1[i]=pref1[i-1];
+        pref2[i]=pref2[i-1];
+        if(a[i]==1) pref1[i]+=v[i]; else pref2[i]+=v[i];
+    }
+    int ans=pref2[k-1];
+    for(int i=1;i<n;i++){
+        if(i+k-1 >= n) break;
+        ans=max(ans,pref2[i+k-1]-pref2[i-1]);
+    }
+    cout<<ans+pref1[n-1];
+
+    return 0;
+}
