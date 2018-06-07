@@ -1,0 +1,40 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int dp[11][101][101];
+
+bool inbounds(int r, int c){
+    return (r>=0 && c>=0 && r<=100 && c<=100);
+}
+
+int main()
+{
+    int n, q, c; cin>>n>>q>>c;
+    for(int i=0;i<n;i++){
+        int x,y,s; cin>>x>>y>>s;
+        dp[s][x][y]++;
+    }
+    for(int p=0;p<=c;p++){
+        for(int i=0;i<=100;i++){
+            for(int j=0;j<=100;j++){
+                if(inbounds(i-1,j)) dp[p][i][j]+=dp[p][i-1][j];
+                if(inbounds(i,j-1)) dp[p][i][j]+=dp[p][i][j-1];
+                if(inbounds(i-1,j-1)) dp[p][i][j]-=dp[p][i-1][j-1];
+            }
+        }
+    }
+    for(int i=0;i<q;i++){
+        int t,x1,y1,x2,y2; cin>>t>>x1>>y1>>x2>>y2;
+        int ans=0;
+        for(int j=0;j<=c;j++){
+            int temp=dp[j][x2][y2];
+            if(inbounds(x2,y1-1)) temp-=dp[j][x2][y1-1];
+            if(inbounds(x1-1,y2)) temp-=dp[j][x1-1][y2];
+            if(inbounds(x1-1,y1-1)) temp+=dp[j][x1-1][y1-1];
+            ans+= ((j+t)%(c+1))*temp;
+        }
+        cout<<ans<<"\n";
+    }
+    return 0;
+}
