@@ -1,0 +1,34 @@
+#include <bits/stdc++.h>
+
+#define ll long long
+
+using namespace std;
+
+ll dp[201][200*27];
+
+int main()
+{
+    ll n, k; cin>>n>>k;
+    memset(dp,-1e9,sizeof(dp));
+    for(ll i=0;i<201;i++){
+        for(int j=0;j<200*27;j++) dp[i][j]=-1e9;
+    }
+    dp[0][0]=0;
+    for(ll y=0;y<n;y++){
+        ll t; cin>>t;
+        ll num2=0; ll num5=0;
+        for(;t%2==0;t/=2) num2++;
+        for(;t%5==0;t/=5) num5++;
+        for(ll i=k;i>=1;i--){
+            for(ll p=num5;p<27*200;p++){
+                dp[i][p]=max(dp[i][p],dp[i-1][p-num5]+num2);
+            }
+        }
+    }
+    ll ans=0;
+    for(ll i=0;i<200*27;i++){
+        ans=max(ans,min(i,dp[k][i]));
+    }
+    cout<<ans;
+    return 0;
+}
