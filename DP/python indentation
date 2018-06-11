@@ -1,0 +1,39 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int dp[5001][5001];
+
+int mod= 1e9 + 7;
+
+int main()
+{
+    int n; cin>>n;
+    vector<char>v;
+    for(int i=0;i<n;i++){
+        char c; cin>>c; v.push_back(c);
+    }
+    dp[0][0]=1;
+    for(int i=1;i<n;i++){
+        if(v[i-1]=='f'){
+            for(int j=0;j<i;j++){
+                dp[i][j+1]=dp[i-1][j];
+            }
+        }
+        else if(v[i-1]=='s'){
+            int sum=0;
+            for(int j=i-1;j>=0;j--){
+                sum+=dp[i-1][j];
+                sum%=mod;
+                dp[i][j]=sum;
+            }
+        }
+    }
+    int ans=0;
+    for(int i=0;i<n;i++){
+        ans+=dp[n-1][i];
+        ans%=mod;
+    }
+    cout<<ans;
+    return 0;
+}
