@@ -1,0 +1,55 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int n=0;
+
+bool inbounds(int r, int c){
+    return (r>=0 && c>=0 && r<n && c<n);
+}
+
+int main()
+{
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    string s; cin>>s;
+    int q; cin>>q;
+    n=s.size();
+    int ispal[n][n];
+    memset(ispal,0,sizeof(ispal));
+    for(int i=0;i<n;i++) ispal[i][i]=1;
+    for(int i=0;i<n-1;i++){
+        if(s[i]==s[i+1]){
+            ispal[i][i+1]=1;
+        }
+    }
+    for(int gp=2;gp<n;gp++){
+        for(int i=0;i<n;i++){
+            int j=i+gp;
+            if(j>=n) continue;
+            if(s[i]==s[j] && ispal[i+1][j-1]){
+                ispal[i][j]=1;
+            }
+        }
+    }
+    int dp[n][n];
+    memset(dp,0,sizeof(dp));
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            dp[i][j]+=ispal[i][j];
+            if(inbounds(i-1,j)) dp[i][j]+=dp[i-1][j];
+            if(inbounds(i,j-1)) dp[i][j]+=dp[i][j-1];
+            if(inbounds(i-1,j-1)) dp[i][j]-=dp[i-1][j-1];
+        }
+    }
+    for(int i=0;i<q;i++){
+        int a, b; cin>>a>>b;
+        a--; b--;
+        int ans=dp[b][b];
+        if(inbounds(a-1,b)) ans-=dp[a-1][b];
+        if(inbounds(a-1,b)) ans-=dp[b][a-1];
+        if(inbounds(a-1,a-1)) ans+=dp[a-1][a-1];
+        cout<<ans<<"\n";
+    }
+    return 0;
+}
