@@ -1,0 +1,32 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const int mod=1000000007;
+
+int main()
+{
+    //ifstream cin("hopscotch.in"); ofstream cout("hopscotch.out");
+    int r, c, k; cin>>r>>c>>k;
+    int grid[r][c];
+    for(int i=0;i<r;i++){
+        for(int j=0;j<c;j++){
+            int t; cin>>t; grid[i][j]=t;
+        }
+    }
+    int dp[r][c];
+    memset(dp,0,sizeof(dp));
+    dp[0][0]=1;
+    for(int i1=0;i1<r;i1++){
+        for(int j1=0;j1<c;j1++){
+            for(int i2=0;i2<i1;i2++){
+                for(int j2=0;j2<j1;j2++){
+                    if(grid[i1][j1]!=grid[i2][j2]) dp[i1][j1]+=dp[i2][j2];
+                    dp[i1][j1]%=mod;
+                }
+            }
+        }
+    }
+    cout<<dp[r-1][c-1];
+    return 0;
+}
