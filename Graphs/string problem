@@ -1,0 +1,82 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+#define ll long long
+
+const ll MAXN=256;
+const ll inf=1e18;
+
+ll adj[MAXN+1][MAXN+1];
+ll dist[MAXN+1][MAXN+1];
+bool mark[MAXN+1][MAXN+1];
+ll n;
+
+void fw(){
+    for(int i=0;i<=MAXN;i++){
+        for(int j=0;j<=MAXN;j++){
+            if(i==j) dist[i][j]=0;
+            else if(mark[i][j] || adj[i][j]){ dist[i][j]=adj[i][j];}
+            else dist[i][j]=inf;
+        }
+    }
+    for(int k=0;k<=MAXN;k++){
+        for(int i=0;i<=MAXN;i++){
+            for(int j=0;j<=MAXN;j++){
+                dist[i][j]=min(dist[i][j],dist[i][k]+dist[k][j]);
+            }
+        }
+    }
+}
+
+
+int main()
+{
+    string s1, s2; cin>>s1>>s2;
+    cin>>n;
+    for(int i=0;i<=MAXN;i++){
+        for(int j=0;j<=MAXN;j++){
+            adj[i][j]=inf;
+        }
+    }
+    vector<int>test;
+    for(int i=0;i<n;i++){
+        char a, b; ll w; cin>>a>>b>>w;
+        adj[(int) a][(int) b]=min(w, adj[(int) a][(int) b]);
+        mark[(int) a][(int) b]=true;
+        test.push_back((int) a); test.push_back((int) b);
+    }
+    fw();
+
+
+    if(s1.size()!=s2.size()){
+        cout<<-1;
+        return 0;
+    }
+    string ans1="";
+    ll ans2=0;
+    for(int i=0;i<s1.size();i++){
+        ll temp=0;
+        if(dist[(int) s1[i]][(int) s2[i]] < dist[(int) s2[i]][(int) s1[i]]){
+            temp=dist[(int) s1[i]][(int) s2[i]];
+            ans1+=s2[i];
+        }
+        else{
+            temp=dist[(int) s2[i]][(int) s1[i]];
+            ans1+=s1[i];
+        }
+        for(int j=0;j<test.size();j++){
+            if(dist[(int) s1[i]][test[j]]+dist[(int) s2[i]][test[j]]<temp){
+                ans1[i]=test[j];
+                temp=dist[(int) s1[i]][test[j]]+dist[(int) s2[i]][test[j]];
+            }
+        }
+        ans2+=temp;
+        if(ans2>=inf){
+            cout<<-1;
+            return 0;
+        }
+    }
+    cout<<ans2<<"\n"<<ans1;
+
+    return 0;
+}
