@@ -1,0 +1,68 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+#define ll long long
+
+const int MAXN=1000;
+const ll inf=1e18;
+ll n, x;
+vector<pair<pair<int,int>,int> > adj[MAXN+1];
+ll dist[MAXN+1];
+int plen[MAXN+1];
+bool visit[MAXN+1];
+priority_queue<pair<ll,int> >q;
+
+void dijkstra(){
+    for(int i=0;i<=MAXN;i++){
+        dist[i]=inf;
+        plen[i]=inf;
+        visit[i]=false;
+    }
+    dist[x]=0;
+    plen[x]=1;
+    q.push(make_pair(0,x));
+    while(!q.empty()){
+        int a=q.top().second;  q.pop();
+        if(visit[a]) continue;
+        visit[a]=true;
+        for(int i=0;i<adj[a].size();i++){
+            int b=adj[a][i].first.first; int w=adj[a][i].first.second;
+            if(dist[a]+w<dist[b]){
+                dist[b]=dist[a]+w;
+                plen[b]=plen[a]+adj[a][i].second;
+                q.push(make_pair(-dist[b],b));
+            }
+            else if(dist[a]+w==dist[b]){
+                plen[b]=min( plen[b],plen[a]+adj[a][i].second);
+            }
+        }
+    }
+}
+
+int main()
+{
+    ifstream cin("cowroute.in");
+    ofstream cout("cowroute.out");
+    int a, b; cin>>a>>b>>n;
+    for(int i=0;i<n;i++){
+        int w, num; cin>>w>>num;
+        vector<int>pos;
+        for(int j=0;j<num;j++){
+            int t; cin>>t; pos.push_back(t);
+        }
+        for(int j=0;j<num;j++){
+            for(int k=j+1;k<num;k++){
+                adj[pos[j]].push_back(make_pair(make_pair(pos[k],w),k-j));
+            }
+        }
+    }
+    x=a;
+    dijkstra();
+    if(dist[b]!=inf)
+        cout<<dist[b]<<" "<<plen[b]-1;
+    else
+        cout<<-1<<" "<<-1;
+
+
+    return 0;
+}
