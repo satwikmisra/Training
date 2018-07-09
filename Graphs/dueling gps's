@@ -1,0 +1,71 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+#define ll long long
+
+const ll MAXN=20000;
+const ll inf=1e18;
+ll n, x;
+vector<pair<ll,ll> > adj[3][MAXN+1];
+ll dist[3][MAXN+1];
+bool visit[MAXN+1];
+priority_queue<pair<ll,ll> >q;
+ll par[MAXN+1];
+
+void dijkstra(ll ty){
+    for(int i=0;i<=MAXN;i++){
+        dist[ty][i]=inf;
+        visit[i]=false;
+    }
+    dist[ty][x]=0;
+    q.push(make_pair(0,x));
+    while(!q.empty()){
+        ll a=q.top().second;  q.pop();
+        if(visit[a]) continue;
+        visit[a]=true;
+        for(int i=0;i<adj[ty][a].size();i++){
+            ll b=adj[ty][a][i].first; ll w=adj[ty][a][i].second;
+            if(dist[ty][a]+w<dist[ty][b]){
+                dist[ty][b]=dist[ty][a]+w;
+                par[b]=a;
+                q.push(make_pair(-dist[ty][b],b));
+            }
+        }
+    }
+}
+
+
+int main()
+{
+    ifstream cin("gpsduel.in");
+    ofstream cout("gpsduel.out");
+    vector<pair<ll,ll>>inp;
+    vector<pair<ll,ll>>weights;
+    ll m; cin>>n>>m;
+    for(int i=0;i<m;i++){
+        ll a, b, c1, c2; cin>>a>>b>>c1>>c2;
+        inp.push_back(make_pair(b,a));
+        weights.push_back(make_pair(c1,c2));
+    }
+    for(int i=0;i<m;i++){
+        adj[0][inp[i].first].push_back(make_pair(inp[i].second,weights[i].first));
+    }
+    x=n;
+    dijkstra(0);
+    for(int i=0;i<m;i++){
+        adj[1][inp[i].first].push_back(make_pair(inp[i].second,weights[i].second));
+    }
+    dijkstra(1);
+    for(int i=0;i<=MAXN;i++){
+        for(int j=0;j<adj[0][i].size();j++){
+            int k=adj[0][i][j].first;
+            int cost=0;
+            if(dist[0][k]-dist[0][i]!=adj[0][i][j].second) cost++;
+            if(dist[1][k]-dist[1][i]!=adj[1][i][j].second) cost++;
+            adj[2][i].push_back(make_pair(k,cost));
+        }
+    }
+    dijkstra(2);
+    cout<<dist[2][1];
+    return 0;
+}
