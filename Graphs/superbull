@@ -1,0 +1,82 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define MAXSZ 2000*2000
+typedef long long ll;
+
+ll height[MAXSZ];
+ll par[MAXSZ];
+ll size[MAXSZ];
+
+void uinit(){
+    for(int i=0;i<MAXSZ;i++){
+        height[i]=1;
+        par[i]=i;
+    }
+}
+
+ll ufind(ll key){
+    if(par[key]!=key){
+        par[key]=ufind(par[key]);
+    }
+    return par[key];
+}
+
+bool connected(ll a, ll b){
+    return (ufind(a)==ufind(b));
+}
+
+void umerge(int a, int b){
+    ll roota=ufind(a);
+    ll rootb=ufind(b);
+    if(roota==rootb) return;
+    if(height[roota]>height[rootb]){
+        par[rootb]=roota;
+        size[roota]+=size[rootb];
+        height[roota]=max(height[roota], height[rootb]+1);
+    }
+    else{
+        par[roota]=rootb;
+        size[rootb]+=size[roota];
+        height[rootb]=max(height[rootb], height[roota]+1);
+    }
+}
+
+vector< pair< ll , pair<ll,ll> > > adj;
+vector< pair< ll , pair<ll,ll> > > mst;
+
+void kruskal(){
+    sort(adj.begin(),adj.end());
+    uinit();
+    for(int i=0;i<adj.size();i++){
+        if(!connected(adj[i].second.first,adj[i].second.second)){
+            umerge(adj[i].second.first,adj[i].second.second);
+            mst.push_back(make_pair(adj[i].first,make_pair(adj[i].second.first,adj[i].second.second)));
+        }
+    }
+}
+
+
+int main()
+{
+    ifstream cin("superbull.in"); ofstream cout("superbull.out");
+    ll n; cin>>n;
+    vector<ll>v;
+    for(int i=0;i<n;i++){
+        ll t; cin>>t; v.push_back(t);
+    }
+    for(int i=0;i<n;i++){
+        for(int j=i+1;j<n;j++){
+            ll cost= (v[i])^(v[j]);
+            adj.push_back(make_pair(-cost,make_pair(i,j)));
+        }
+    }
+    kruskal();
+    ll ans=0;
+    for(int i=0;i<mst.size();i++){
+        ans+=mst[i].first;
+    }
+    cout<<-ans;
+    return 0;
+}
