@@ -1,0 +1,90 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+typedef long long ll;
+
+#define MAXSZ 2000*2000
+
+int height[MAXSZ];
+int par[MAXSZ];
+int size[MAXSZ];
+
+void uinit(){
+    for(int i=0;i<MAXSZ;i++){
+        height[i]=1;
+        par[i]=i;
+    }
+}
+
+ll ufind(int key){
+    if(par[key]!=key){
+        par[key]=ufind(par[key]);
+    }
+    return par[key];
+}
+
+bool connected(int a, int b){
+    return (ufind(a)==ufind(b));
+}
+
+void umerge(int a, int b){
+    int roota=ufind(a);
+    int rootb=ufind(b);
+    if(roota==rootb) return;
+    if(height[roota]>height[rootb]){
+        par[rootb]=roota;
+        size[roota]+=size[rootb];
+        height[roota]=max(height[roota], height[rootb]+1);
+    }
+    else{
+        par[roota]=rootb;
+        size[rootb]+=size[roota];
+        height[rootb]=max(height[rootb], height[roota]+1);
+    }
+}
+
+
+vector< pair< int , pair<int,int> > > adj;
+vector< pair< int , pair<int,int> > > mst;
+
+void kruskal(){
+    sort(adj.begin(),adj.end());
+    uinit();
+    for(int i=0;i<adj.size();i++){
+        if(!connected(adj[i].second.first,adj[i].second.second)){
+            umerge(adj[i].second.first,adj[i].second.second);
+            mst.push_back(make_pair(adj[i].first,make_pair(adj[i].second.first,adj[i].second.second)));
+        }
+    }
+}
+
+int main()
+{
+    ifstream cin("irrigation.in"); ofstream cout("irrigation.out");
+    int n, c; cin>>n>>c;
+    vector<pair<int,int>>v;
+    for(int i=0;i<n;i++){
+        int a, b; cin>>a>>b;
+        v.push_back(make_pair(a,b));
+    }
+    for(int i=0;i<n;i++){
+        for(int j=i+1;j<n;j++){
+            int cost= (v[j].first-v[i].first)*(v[j].first-v[i].first) + (v[j].second-v[i].second)*(v[j].second-v[i].second);
+            if(cost>=c){
+                adj.push_back(make_pair(cost,make_pair(i,j)));
+            }
+        }
+    }
+    kruskal();
+    int ans=0;
+    if(mst.size()!=n-1){
+        cout<<-1;
+        return 0;
+    }
+    for(int i=0;i<mst.size();i++){
+        ans+=mst[i].first;
+        //cout<<mst[i].second.first<<" "<<mst[i].second.second<<"\n";
+    }
+    cout<<ans;
+    return 0;
+}
