@@ -1,0 +1,35 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<int> adj[100001];
+bool visit[100001];
+double ans;
+
+void dfs(int cur, int par, double prob, int dep){
+    if(visit[cur]) return;
+    visit[cur]=true;
+    int bel=0;
+    for(int i=0;i<adj[cur].size();i++){
+        if(adj[cur][i]!=par) bel++;
+    }
+    for(int i=0;i<adj[cur].size();i++){
+        if(adj[cur][i]!=par){
+            dfs(adj[cur][i],cur,prob/bel,dep+1);
+        }
+    }
+    if(bel==0) ans+=(prob*dep);
+}
+
+int main()
+{
+    int n; cin>>n;
+    for(int i=0;i<n-1;i++){
+        int a, b; cin>>a>>b;
+        adj[a].push_back(b);
+        adj[b].push_back(a);
+    }
+    dfs(1,0,1,0);
+    cout<<fixed<<setprecision(7)<<ans;
+    return 0;
+}
