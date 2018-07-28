@@ -4,96 +4,71 @@ using namespace std;
 typedef long long ll;
 
 int n;
-vector<int> adj[200001];
 vector<pair<int,int> >pos;
-int dep[200001];
-bool visit[200001];
+const int MAXSZ=10000;
+vector<int> height, euler, first, segtree;
+vector<bool>visited;
+vector<int> adj[MAXSZ];
 
-void calcdep(){
-    queue<int>q;
-    q.push(1);
-    visit[1]=true;
-    dep[1]=1;
-    while(!q.empty()){
-        int cur=q.front();
-        //cout<<q.size()<<" ";
-        q.pop();
-        for(int i=0;i<adj[cur].size();i++){
-            int next=adj[cur][i];
-            if(!visit[next]){
-                dep[next]=dep[cur]+1;
-                visit[next]=true;
-                q.push(next);
-            }
+void sbuild(int node, int b, int e){
+    if(b==e) segtree[node]=euler[b];
+    else{
+        int mid=(e+b)/2;
+        sbuild(node << 1,b,mid);
+        sbuild(node << 1 | 1,mid+1,e);
+        int l=segtree[node << 1]; int r=segtree[node << 1 | 1];
+        segtree[node] = (height[l]<height[r]) ? l : r;
+    }
+}
+
+int query(int node, int b, int e, int l, int r){
+    if(b>r || e<l) return -1;
+    if(b>=l && e<=r) return segtree[node];
+    int mid = (b+e) >> 1;
+    int left=query(node << 1, b, mid, l, r);
+    int right=query(node << 1 | 1, mid+1, e, l, r);
+    if(left==-1) return right;
+    if(right==-1) return left;
+    return height[left] < height[right] ? left : right;
+}
+
+void dfs(int cur, int h){
+    visited[cur]=true;
+    height[cur]=h;
+    first[cur]=euler.size();
+    euler.push_back(cur);
+    for(int i=0;i<adj[cur].size();i++){
+        if(!visited[adj[cur][i]]){
+            dfs(adj[cur][i],h+1);
+            euler.push_back(cur);
         }
     }
 }
 
-struct segtree{
-    vector<ll>tree;
-    vector<ll>lazy;
-    vector<ll>lo;
-    vector<ll>hi;
-    segtree(ll sz){
-        tree.resize(4*sz+1);
-        lazy.resize(4*sz+1);
-        lo.resize(4*sz+1);
-        hi.resize(4*sz+1);
-        init(1,0,sz-1);
-    }
-    void init(ll node, ll a, ll b){
-        lo[node]=a; hi[node]=b;
-        if(a==b) return;
-        int split=(a+b)/2;
-        init(2*node,a,split);
-        init(2*node+1,split+1,b);
-    }
-    void update(ll a, ll b, ll val){
-        hupdate(1,a,b,val);
-    }
-    ll minquery(ll a, ll b){
-        return hminquery(1,a,b);
-    }
-    void prop(ll node){
-        lazy[2*node]+=lazy[node];
-        lazy[2*node+1]+=lazy[node];
-        lazy[node]=0;
-    }
-    void change(ll node){
-        tree[node]=min(tree[2*node+1] + lazy[2*node+1], tree[2*node] + lazy[2*node]);
-    }
-    void hupdate(ll node, ll a, ll b, ll val){
-        if(b<lo[node] || hi[node]<a) return;
-        if(a<=lo[node] && hi[node]<=b){
-            lazy[node]+=val;
-            return;
-        }
-        prop(node);
-        hupdate(2*node,a,b,val);
-        hupdate(2*node+1,a,b,val);
-        change(node);
-    }
-    ll hminquery(ll node, ll a, ll b){
-        if(b<lo[node] || hi[node]<a) return LONG_MAX;
-        if(a<=lo[node] && hi[node]<=b){
-            return tree[node]+lazy[node];
-        }
-        prop(node);
-        ll left=hminquery(2*node, a, b);
-        ll right=hminquery(2*node+1,a,b);
-        change(node);
-        return min(left, right);
-    }
-};
+void hlca(int root=1){
+    height.resize(n);
+    first.resize(n);
+    euler.reserve(2*n);
+    visited.assign(n,false);
+    dfs(root,0);
+    int m=euler.size();
+    segtree.resize(4*m);
+    sbuild(1,0,m-1);
+}
 
-vector<int>euler;
+int lca(int u, int v){
+    int left=first[u]; int right=first[v];
+    if(left>right) swap(left, right);
+    return query(1,0,euler.size()-1,left,right);
+}
 
-void lca(){
-
+int dist(int u, int v){
+    return ( height[u] + height[v] - 2*height[lca(u,v)] );
 }
 
 int main()
 {
+    ifstream cin("tourists-0000.in");
     cin>>n;
     for(int i=0;i<n-1;i++){
         int a, b; cin>>a>>b;
@@ -105,7 +80,12 @@ int main()
             pos.push_back(make_pair(i,j));
         }
     }
-    calcdep();
-    
+    hlca();
+    int ans=0;
+    for(int i=0;i<pos.size();i++){
+        //cout<<pos[i].first<<" "<<pos[i].second<<" "<<dist(pos[i].first,pos[i].second)+1<<"\n";
+        ans+=(dist(pos[i].first,pos[i].second)+1);
+    }
+    cout<<ans;
     return 0;
 }
