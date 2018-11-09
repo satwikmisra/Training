@@ -1,0 +1,47 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+struct box{
+    int h;
+    int w;
+    int l;
+    box(int a, int b, int c){
+        h=a; w=b; l=c;
+    }
+    bool operator<(const box& b){
+        return (w * l) < (b.w * b.l);
+    }
+};
+
+int main()
+{
+    int n; cin>>n;
+    vector<box>v;
+    for(int i=0;i<n;i++){
+        int a,b,c; cin>>a>>b>>c;
+        v.push_back(box(a,b,c));
+        v.push_back(box(b,a,c));
+        v.push_back(box(c,b,a));
+    }
+    sort(v.begin(),v.end());
+    int dp[3*n+1];
+    dp[0]=v[0].h;
+    for(int i=1;i<v.size();i++){
+        dp[i]=v[i].h;
+        int temp=INT_MIN;
+        for(int j=0;j<i;j++){
+            if(v[j].w<v[i].w && v[j].l<v[i].l) temp=max(temp,dp[j]);
+            else if(v[j].w<v[i].l && v[j].l<v[i].w) temp=max(temp,dp[j]);
+        }
+        if(temp>=0){
+            dp[i]+=temp;
+        }
+    }
+    int ans=dp[0];
+    for(int i=0;i<v.size();i++){
+        ans=max(ans,dp[i]);
+    }
+    cout<<ans;
+    return 0;
+}
