@@ -4,29 +4,24 @@ using namespace std;
 
 int main()
 {
-    string s1,s2; cin>>s1>>s2;
+    string s1, s2; cin>>s1>>s2;
     int sz1=s1.size(); int sz2=s2.size();
-    int dp[sz1][sz2];
+    int dp[sz1+1][sz2+1];
     memset(dp,0,sizeof(dp));
-    if(s1[0]!=s2[0]) dp[0][0]=1;
-    for(int i=1;i<sz1;i++){
-        dp[i][0]=i+1;
+    for(int i=0;i<=sz1;i++){
+        dp[i][0]=i;
     }
-    for(int i=1;i<sz2;i++){
-        dp[0][i]=i+1;
+    for(int i=0;i<=sz2;i++){
+        dp[0][i]=i;
     }
-    for(int i=1;i<sz1;i++){
-        for(int j=1;j<sz2;j++){
-            int cost=0; if(s1[i]!=s2[i]) cost++;
-            dp[i][j]=min(min(dp[i][j-1]+1,dp[i][j-1]),dp[i-1][j-1]+cost);
+    for(int i=1;i<=sz1;i++){
+        for(int j=1;j<=sz2;j++){
+            if(s1[i-1]==s2[j-1]) dp[i][j]=dp[i-1][j-1];
+            else{
+                dp[i][j]=min(min(dp[i-1][j],dp[i][j-1]),dp[i-1][j-1])+1;
+            }
         }
     }
-    cout<<dp[sz1-1][sz2-1]<<"\n";
-    /*for(int i=0;i<sz1;i++){
-        for(int j=0;j<sz2;j++){
-            cout<<dp[i][j]<<" ";
-        }
-        cout<<"\n";
-    }*/
+    cout<<dp[sz1][sz2];
     return 0;
 }
