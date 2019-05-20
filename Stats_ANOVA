@@ -1,0 +1,71 @@
+import java.io.*;
+import java.util.*;
+
+public class StatsAnova {
+
+	public static void main (String[] args) throws IOException{
+		Scanner input=new Scanner(new File("statsanova.in"));
+		int n1=input.nextInt();
+		int n2=input.nextInt();
+		int n3=input.nextInt();
+		int A1[]=new int[n1];
+		int A2[]=new int[n2];
+		int A3[]=new int[n3];
+		double avg1=0;
+		double avg2=0;
+		double avg3=0;
+		double avg=0;
+		for(int i=0;i<n1;i++) {
+			A1[i]=input.nextInt();
+			avg1+=A1[i];
+		}
+		
+		for(int i=0;i<n2;i++) {
+			A2[i]=input.nextInt();
+			avg2+=A2[i];
+		}	
+		for(int i=0;i<n3;i++) {
+			A3[i]=input.nextInt();
+			avg3+=A3[i];
+	}
+		avg=(avg1+avg2+avg3)/(n1+n2+n3);
+		avg1/=n1;
+		avg2/=n2;
+		avg3/=n3;
+		
+		double sst=0;
+		for(int i=0;i<n1;i++)
+			sst+=Math.pow(avg-A1[i],2);
+		for(int i=0;i<n2;i++)
+			sst+=Math.pow(avg-A2[i],2);
+		for(int i=0;i<n3;i++)
+			sst+=Math.pow(avg-A3[i],2);
+		
+		
+		double sstr=n1*(avg1-avg)*(avg1-avg)+n2*(avg2-avg)*(avg2-avg)+n3*(avg3-avg)*(avg3-avg);
+		double sse=0;
+		for(int i=0;i<n1;i++) {
+			sse+=Math.pow((avg1-A1[i]),2);
+		}
+		for(int i=0;i<n2;i++) {
+			sse+=Math.pow((avg2-A2[i]),2);
+		}
+		for(int i=0;i<n3;i++) {
+			sse+=Math.pow((avg3-A3[i]),2);
+		}
+		double mse=sse/(n1+n2+n3-3);
+		double f=sstr*(n1+n2+n3-3)/2/sse;
+		
+		System.out.println("avg1: "+avg1);
+		System.out.println("avg2: "+avg2);
+		System.out.println("avg3: "+avg3);
+		System.out.println("avg: "+avg);
+		System.out.println("sst: "+sst);
+		System.out.println("sstr: "+sstr);
+		System.out.println("sse: "+sse);
+		System.out.println("mst: "+sst/2);
+		System.out.println("mstr: "+sstr/2);
+		System.out.println("mse: "+mse);
+		System.out.println("f: "+f);
+	}
+}
